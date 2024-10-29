@@ -113,7 +113,7 @@
                         <table class="table table-bordered">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>No</th>
+                                    <th>No.</th>
                                     <th>Kompetensi Keahlian</th>
                                     <th>Jumlah Alumni</th>
                                 </tr>
