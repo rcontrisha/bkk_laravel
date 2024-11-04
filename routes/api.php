@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\AlumniController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookmarkController;
 
 /*
@@ -21,6 +22,7 @@ use App\Http\Controllers\BookmarkController;
 
 // Rute untuk login API
 Route::post('/login', [AuthenticatedSessionController::class, 'apiStore']);
+Route::post('/register', [RegisteredUserController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // Routes untuk LowonganController

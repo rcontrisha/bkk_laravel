@@ -95,7 +95,47 @@
                 }
             });
 
+            // Opsi default
+            var kompetensiDefault = [
+                'Akuntansi dan Keuangan Lembaga',
+                'Bisnis Daring dan Pemasaran',
+                'Multimedia',
+                'Otomatisasi dan Tata Kelola Perkantoran'
+            ];
+
+            // Opsi khusus untuk Tahun Kelulusan 2024
+            var kompetensi2024 = [
+                'Akuntansi dan Keuangan Lembaga',
+                'Manajemen Perkantoran',
+                'Broadcasting dan Perfilman',
+                'Bisnis Retail'
+            ];
+
+            // Event listener untuk perubahan pada dropdown Tahun Kelulusan
+            $('#tahun_kelulusan').on('change', function() {
+                var selectedYear = $(this).val();
+                var kompetensiDropdown = $('#kompetensi');
+
+                // Hapus semua opsi di dropdown Kompetensi
+                kompetensiDropdown.empty();
+
+                // Jika Tahun Kelulusan adalah 2024, gunakan opsi khusus 2024
+                if (selectedYear === '2024') {
+                    kompetensi2024.forEach(function(item) {
+                        kompetensiDropdown.append(new Option(item, item));
+                    });
+                } else {
+                    // Jika tahun selain 2024, gunakan opsi default
+                    kompetensiDefault.forEach(function(item) {
+                        kompetensiDropdown.append(new Option(item, item));
+                    });
+                }
+            });
+
             function loadDataFromDatabase() {
+                // Kosongkan tabel terlebih dahulu
+                $('#alumniTable tbody').empty();
+
                 $.ajax({
                     url: '{{ route('alumni.data') }}',
                     type: 'GET',
@@ -127,6 +167,10 @@
             //edit button
             $(document).on('click', '.edit-btn', function() {
                 var id = $(this).data('id');
+                console.log("Editing ID:", id); // Tambahkan ini untuk cek ID
+
+                // Isi input hidden dengan ID yang benar
+                $('#editId').val(id); 
                 $.ajax({
                     url: '{{ route('alumni.edit', '') }}/' + id,
                     type: 'GET',
@@ -155,9 +199,10 @@
                 var formData = $(this).serialize();
                 // Ambil ID alumni dari form atau sesuaikan dengan kebutuhan Anda
                 var id = $('#editId').val();
+                console.log(id)
                 // Kirim data alumni yang telah diedit ke server dengan AJAX
                 $.ajax({
-                    url: '{{ route('alumni.update', '') }}' + id,
+                    url: '{{ route('alumni.update', '') }}/' + id,
                     type: 'PUT',
                     data: formData,
                     success: function(response) {
@@ -206,6 +251,7 @@
                 <form id="editForm">
                     <div class="modal-body">
                         <!-- Isi Form Edit Di sini -->
+                        <input type="hidden" id="editId" name="id">
                         <div class="form-group">
                             <label for="editNISN">NISN</label>
                             <input type="number" class="form-control" id="editNISN" name="nisn">
@@ -219,21 +265,20 @@
                             <fieldset class="form-group">
                                 <select class="form-select" id="jenis_kelamin"
                                     name="jenis_kelamin">
-                                    <option>Laki - laki</option>
+                                    <option>Laki-laki</option>
                                     <option>Perempuan</option>
                                 </select>
                             </fieldset>
                         </div>
                         <div class="form-group">
-                            <label for="editNISN">Jurusan</label>
-                            <fieldset class="form-group">
-                                <select class="form-select" id="jurusan" name="jurusan">
-                                    <option>Akuntansi dan Keuangan Lembaga</option>
-                                    <option>Bisnis Daring dan Pemasaran</option>
-                                    <option>Multimedia</option>
-                                    <option>Otomatisasi dan Tata Kelola Perkantoran</option>
-                                </select>
-                            </fieldset>
+                            <label for="kompetensi">Kompetensi</label>
+                            <select class="form-select" id="kompetensi" name="jurusan">
+                                <!-- Opsi default akan diisi di skrip JavaScript -->
+                                <option>Akuntansi dan Keuangan Lembaga</option>
+                                <option>Bisnis Daring dan Pemasaran</option>
+                                <option>Multimedia</option>
+                                <option>Otomatisasi dan Tata Kelola Perkantoran</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="editNISN">Tahun Kelulusan</label>
@@ -263,15 +308,15 @@
                         </div>
                         <div class="form-group">
                             <label for="editTempat">Tempat</label>
-                            <input type="text" class="form-control" id="editTempat" name="editTempat">
+                            <input type="text" class="form-control" id="editTempat" name="tempat_sasaran">
                         </div>
                         <div class="form-group">
                             <label for="editNomor">Nomor Telepon</label>
-                            <input type="text" class="form-control" id="editNomor" name="editNomor">
+                            <input type="text" class="form-control" id="editNomor" name="nomor_telepon">
                         </div>
                         <div class="form-group">
                             <label for="editEmail">Email</label>
-                            <input type="text" class="form-control" id="editEmail" name="editEmail">
+                            <input type="text" class="form-control" id="editEmail" name="email">
                         </div>
                         
 

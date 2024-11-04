@@ -131,11 +131,19 @@
                         $('#editTipe').val(lowongan.tipe);
                         $('#editGaji').val(lowongan.gaji);
                         $('#editDeskripsi').val(lowongan.deskripsi);
+
                         // Clear existing inputs and populate new ones
                         $('#editRequirementFields').empty();
                         const requirements = JSON.parse(lowongan.requirement) || [];
-                        requirements.forEach(function(req) {
-                            $('#editRequirementFields').append('<input type="text" class="form-control mt-2" name="requirement[]" value="' + req + '" placeholder="Masukkan requirement" required>');
+                        requirements.forEach(function(req, index) {
+                            $('#editRequirementFields').append(`
+                                <div class="input-group mt-2" data-requirement-id="${index}">
+                                    <input type="text" class="form-control" name="requirement[]" value="${req}" placeholder="Masukkan requirement" required>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-danger remove-existing-requirement">Hapus</button>
+                                    </div>
+                                </div>
+                            `);
                         });
                         $('#editModal').modal('show');
                     },
@@ -143,6 +151,27 @@
                         console.log('Error:', xhr.responseText);
                     }
                 });
+            });
+
+            // Event handler for adding new requirement input fields
+            $('#addEditRequirement').on('click', function() {
+                $('#editRequirementFields').append(`
+                    <div class="input-group mt-2">
+                        <input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-danger remove-requirement">Hapus</button>
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Event handler for removing a requirement field
+            $(document).on('click', '.remove-requirement', function() {
+                $(this).closest('.input-group').remove();
+            });
+
+            $(document).on('click', '.remove-existing-requirement', function() {
+                $(this).closest('.input-group').remove();
             });
 
             $('#editForm').on('submit', function(event) {
@@ -225,12 +254,17 @@
                         <div class="form-group">
                             <label for="editRequirement">Requirement</label>
                             <div id="editRequirementFields">
-                                <!-- Dynamic input fields will be appended here -->
-                                <input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>
+                                <!-- Dynamic input fields with remove buttons will be appended here -->
+                                <div class="input-group mt-2">
+                                    <input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-danger remove-requirement">Hapus</button>
+                                    </div>
+                                </div>
                             </div>
                             <button type="button" id="addEditRequirement" class="btn btn-secondary mt-2">Tambah Requirement</button>
                             <small class="form-text text-muted">Contoh isi: "Pengalaman minimal 2 tahun di bidang pengembangan perangkat lunak"</small>
-                        </div>
+                        </div>                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="closeModal">Tutup</button>

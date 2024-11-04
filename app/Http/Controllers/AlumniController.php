@@ -72,11 +72,16 @@ class AlumniController extends Controller
      */
     public function store(Request $request)
     {
-        // Periksa apakah user yang sedang login sudah memiliki data alumni
-        $existingAlumni = Alumni::where('user_id', Auth::id())->first();
+        // Ambil user yang sedang login
+        $user = Auth::user();
 
-        if ($existingAlumni) {
-            return response()->json(['message' => 'User ini sudah memiliki data alumni'], 400);
+        // Periksa apakah user yang sedang login sudah memiliki data alumni jika bukan admin
+        if ($user->role !== 'admin') {
+            $existingAlumni = Alumni::where('user_id', $user->id)->first();
+            
+            if ($existingAlumni) {
+                return response()->json(['message' => 'User ini sudah memiliki data alumni'], 400);
+            }
         }
 
         $validated = $request->validate([

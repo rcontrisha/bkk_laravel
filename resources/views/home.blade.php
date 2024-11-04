@@ -170,40 +170,43 @@
         });
     
         $(document).ready(function () {
-            // Set initial chart data using all alumni data
-            updateChart(@json($chartData)); // Mengisi chart dengan data awal
-    
-            // Event listener for dropdown change
-            $('#tahunKelulusanDropdown').change(function () {
-                var selectedTahun = $(this).val();
-    
-                $.ajax({
-                    url: '{{ route("dashboard") }}',
-                    method: 'GET',
-                    data: {
-                        tahun: selectedTahun
-                    },
-                    success: function (response) {
-                        console.log(response); // Debugging response data
-                        $('#rekapTableBody').html(response.rekapHtml);
-                        $('#kompetensiTableBody').html(response.kompetensiHtml);
-                        updateChart(response.rekap); // Update chart with received data
-                    },
-                    error: function (xhr) {
-                        console.error("Error fetching data: ", xhr);
-                    }
-                });
+        // Inisialisasi data chart dan dropdown
+        updateChart(@json($chartData));
+        
+        // Event listener untuk dropdown tahun
+        $('#tahunKelulusanDropdown').change(function () {
+            var selectedTahun = $(this).val();
+
+            $.ajax({
+                url: '{{ route("dashboard") }}',
+                method: 'GET',
+                data: {
+                    tahun: selectedTahun
+                },
+                success: function (response) {
+                    $('#rekapTableBody').html(response.rekapHtml);
+                    $('#kompetensiTableBody').html(response.kompetensiHtml);
+                    updateChart(response.rekap);
+                },
+                error: function (xhr) {
+                    console.error("Error fetching data: ", xhr);
+                }
             });
-    
-            // Function to update chart
-            function updateChart(data) {
-                console.log(data); // Debugging received data
-                lulusanChart.data.labels = data.labels; // Update chart labels
-                lulusanChart.data.datasets[0].data = data.counts; // Update chart data
-                lulusanChart.update(); // Refresh chart
-            }
-    
         });
+
+        // Gunakan event delegation untuk tombol "Lihat Data Tamatan"
+        $(document).on('click', '.btn-primary.no-pdf', function (e) {
+            e.preventDefault();  // Prevent default link behavior
+            var href = $(this).attr('href'); // Ambil URL dari tombol
+            window.location.href = href; // Arahkan pengguna ke URL
+        });
+
+        function updateChart(data) {
+            lulusanChart.data.labels = data.labels;
+            lulusanChart.data.datasets[0].data = data.counts;
+            lulusanChart.update();
+        }
+    });
 
         document.getElementById('downloadPdfBtn').addEventListener('click', function () {
             const { jsPDF } = window.jspdf;

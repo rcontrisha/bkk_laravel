@@ -72,22 +72,21 @@
                                                     <fieldset class="form-group">
                                                         <select class="form-select" id="jenis_kelamin"
                                                             name="jenis_kelamin">
-                                                            <option>Laki - laki</option>
+                                                            <option>Laki-laki</option>
                                                             <option>Perempuan</option>
                                                         </select>
                                                     </fieldset>
                                                 </div>
                                                 <div class="col-md-12 col-12">
                                                     <div class="form-group">
-                                                        <label for="company-column">Jurusan</label>
-                                                        <fieldset class="form-group">
-                                                            <select class="form-select" id="jurusan" name="jurusan">
-                                                                <option>Akuntansi dan Keuangan Lembaga</option>
-                                                                <option>Bisnis Daring dan Pemasaran</option>
-                                                                <option>Multimedia</option>
-                                                                <option>Otomatisasi dan Tata Kelola Perkantoran</option>
-                                                            </select>
-                                                        </fieldset>
+                                                        <label for="kompetensi">Kompetensi</label>
+                                                        <select class="form-select" id="kompetensi" name="jurusan">
+                                                            <!-- Opsi default akan diisi di skrip JavaScript -->
+                                                            <option>Akuntansi dan Keuangan Lembaga</option>
+                                                            <option>Bisnis Daring dan Pemasaran</option>
+                                                            <option>Multimedia</option>
+                                                            <option>Otomatisasi dan Tata Kelola Perkantoran</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12 col-12">
@@ -96,12 +95,12 @@
                                                         <fieldset class="form-group">
                                                             <select class="form-select" id="tahun_kelulusan"
                                                                 name="tahun_kelulusan">
+                                                                <option>2019</option>
+                                                                <option>2020</option>
                                                                 <option>2021</option>
                                                                 <option>2022</option>
                                                                 <option>2023</option>
                                                                 <option>2024</option>
-                                                                <option>2025</option>
-                                                                <option>2026</option>
                                                             </select>
                                                         </fieldset>
                                                     </div>
@@ -168,6 +167,43 @@
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // Opsi default
+            var kompetensiDefault = [
+                'Akuntansi dan Keuangan Lembaga',
+                'Bisnis Daring dan Pemasaran',
+                'Multimedia',
+                'Otomatisasi dan Tata Kelola Perkantoran'
+            ];
+
+            // Opsi khusus untuk Tahun Kelulusan 2024
+            var kompetensi2024 = [
+                'Akuntansi dan Keuangan Lembaga',
+                'Manajemen Perkantoran',
+                'Broadcasting dan Perfilman',
+                'Bisnis Retail'
+            ];
+
+            // Event listener untuk perubahan pada dropdown Tahun Kelulusan
+            $('#tahun_kelulusan').on('change', function() {
+                var selectedYear = $(this).val();
+                var kompetensiDropdown = $('#kompetensi');
+
+                // Hapus semua opsi di dropdown Kompetensi
+                kompetensiDropdown.empty();
+
+                // Jika Tahun Kelulusan adalah 2024, gunakan opsi khusus 2024
+                if (selectedYear === '2024') {
+                    kompetensi2024.forEach(function(item) {
+                        kompetensiDropdown.append(new Option(item, item));
+                    });
+                } else {
+                    // Jika tahun selain 2024, gunakan opsi default
+                    kompetensiDefault.forEach(function(item) {
+                        kompetensiDropdown.append(new Option(item, item));
+                    });
                 }
             });
 

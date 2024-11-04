@@ -12,6 +12,8 @@
     <td>{{ number_format(($data->belum_kerja / $data->total) * 100, 2) }}</td>
     <td>{{ $data->belum_terdata }}</td>
     <td>{{ number_format(($data->belum_terdata / $data->total) * 100, 2) }}</td>
-    <td><button class="btn btn-primary">Lihat Data Tamatan</button></td>
+    <td>
+        <a href="{{ route('alumni.data.tahun', ['tahun' => $data->tahun_kelulusan]) }}" class="btn btn-primary no-pdf">Lihat Data Tamatan</a>
+    </td>
 </tr>
 @endforeach
