@@ -43,47 +43,80 @@
         <div class="sidebar-menu">
             <ul class="menu">
                 <h3>Halo {{ Auth::user()->name }}!</h3>
-                {{-- <li class="sidebar-item" style="border-top: 1px solid #ccc; margin: 10px 0;"></li> --}}
-                <li class="sidebar-title">Menu</li>
-                <li class="sidebar-item ">
-                    <a href="{{ route('dashboard') }}" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="{{ route('index.show') }}" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Input Data</span>
-                    </a>
-                    <a href="{{ route('alumni.index') }}" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Data Alumni</span>
-                    </a>
-                    <a href="{{ route('lowongan.show') }}" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Input Lowongan</span>
-                    </a>
-                    <a href="{{ route('lowongan.data') }}" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Data Lowongan</span>
-                    </a>
-                </li>
-                <li class="sidebar-item  has-sub">
-                    <a href="#" class='sidebar-link'>
+                
+                @if(Auth::user()->role == 'mitra')
+                    <!-- Menu khusus untuk Mitra -->
+                    <li class="sidebar-title">Menu</li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('lowongan.show') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Input Lowongan</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('lowongan.data') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Data Lowongan</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('pendaftaran.index') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Data Pendaftaran Lowongan</span>
+                        </a>
+                    </li>
+                @else
+                    <!-- Menu untuk pengguna lain -->
+                    <li class="sidebar-title">Menu</li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('dashboard') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('index.show') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Input Data</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('alumni.index') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Data Alumni</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('lowongan.show') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Input Lowongan</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('lowongan.data') }}" class="sidebar-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Data Lowongan</span>
+                        </a>
+                    </li>
+                @endif
+
+                <!-- Profile Settings -->
+                <li class="sidebar-item has-sub">
+                    <a href="#" class="sidebar-link">
                         <i class="bi bi-file-person"></i>
                         <span>Profile Settings</span>
                     </a>
-                    <ul class="submenu ">
-                        <li class="submenu-item  ">
+                    <ul class="submenu">
+                        <li class="submenu-item">
                             <a href="{{ route('profile.edit') }}" class="submenu-link">Profile</a>
                         </li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <li class="submenu-item">
-                                <a href="table-datatable.html" class="submenu-link"
-                                    onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
+                                <a href="#" class="submenu-link" 
+                                   onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
                             </li>
                         </form>
-
                     </ul>
                 </li>
             </ul>

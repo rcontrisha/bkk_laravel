@@ -84,6 +84,7 @@ class AlumniController extends Controller
             }
         }
 
+        // Validasi data
         $validated = $request->validate([
             'nisn' => 'required|numeric|unique:alumnis,nisn',
             'nama_siswa' => 'required|string|max:255',
@@ -93,17 +94,29 @@ class AlumniController extends Controller
             'sasaran' => 'required|string|max:255',
             'tempat_sasaran' => 'nullable|string|max:255',
             'nomor_telepon' => 'required|numeric|digits_between:11,13',
-            'email' => 'required|email|max:255|unique:alumnis,email'
+            'email' => 'required|email|max:255|unique:alumnis,email',
+            'cv' => 'required|file|mimes:pdf,doc,docx|max:2048', // Validasi file CV
         ]);
 
         // Tambahkan ID user yang sedang login ke dalam data yang akan disimpan
         $validated['user_id'] = Auth::id();
 
+        // Proses file CV jika ada
+        if ($request->hasFile('cv')) {
+            $file = $request->file('cv');
+            $filename = 'cv_' . time() . '_' . $file->getClientOriginalName(); // Nama unik untuk file
+            $path = $file->storeAs('public/cv', $filename); // Simpan file ke storage/public/cv
+            $validated['file_cv'] = $path; // Simpan path ke database
+        }
+
         // Buat data alumni baru
         $alumni = Alumni::create($validated);
 
         if ($request->wantsJson()) {
-            return response()->json(['message' => 'Data berhasil disimpan', 'data' => $alumni], 201);
+            return response()->json([
+                'message' => 'Data berhasil disimpan',
+                'data' => $alumni
+            ], 201);
         }
 
         return redirect()->route('alumni.index')->with('success', 'Data berhasil disimpan');

@@ -20,7 +20,8 @@ class Alumni extends Model
         'tempat_sasaran',
         'nomor_telepon',
         'email',
-        'photo'
+        'photo',
+        'file_cv'
     ];
 
     public function user()

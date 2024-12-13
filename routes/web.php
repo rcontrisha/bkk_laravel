@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlumniController;
-use App\Http\Controllers\ControllerPendaftaran;
+use App\Http\Controllers\DaftarController;
 use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +40,14 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/edit-lowongan/{id}', [LowonganController::class, 'show'])->name('lowongan.edit');
     Route::put('/update-lowongan/{id}', [LowonganController::class, 'update'])->name('lowongan.update');
 
+    // Routes for Pendaftaran Lowongan
+    Route::get('/pendaftaran', [DaftarController::class, 'index'])->name('pendaftaran.index'); // Menampilkan daftar pendaftaran
+    Route::get('/pendaftaran/{id}', [DaftarController::class, 'show'])->name('pendaftaran.show'); // Detail pendaftaran
+    Route::post('/pendaftaran', [DaftarController::class, 'store'])->name('pendaftaran.store'); // Menyimpan pendaftaran baru
+    Route::post('/pendaftaran/{id}/update-status', [DaftarController::class, 'updateStatus'])->name('pendaftaran.updateStatus');
+    Route::delete('/pendaftaran/{id}', [DaftarController::class, 'destroy'])->name('pendaftaran.destroy'); // Menghapus pendaftaran
+
+    // Route untuk Alumni
     Route::get('/data-alumni-tahun', [AlumniController::class, 'dataByYear'])->name('alumni.data.tahun');
     Route::get('/alumni/data', [AlumniController::class, 'getData'])->name('alumni.data');
     Route::get('/alumni', [AlumniController::class, 'show'])->name('alumni.index'); 

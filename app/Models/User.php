@@ -37,4 +37,9 @@ class User extends Authenticatable
         // Default hubungan untuk non-admin
         return $this->hasOne(Alumni::class);
     }
+
+    public function pendaftaranLowongan()
+    {
+        return $this->hasMany(DaftarLowongan::class, 'user_id');
+    }
 }

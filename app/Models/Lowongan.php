@@ -13,12 +13,20 @@ class Lowongan extends Model
 
     protected $fillable = [
         'judul',
+        'id_mitra',
         'perusahaan',
         'lokasi',
         'kategori',
         'tipe',
         'gaji',
         'deskripsi',
-        'requirement'
+        'requirement',
+        'photo',
+        'link_lamaran'
     ];
+
+    public function pendaftaranLowongan()
+    {
+        return $this->hasMany(DaftarLowongan::class, 'lowongan_id');
+    }
 }

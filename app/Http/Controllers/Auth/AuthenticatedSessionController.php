@@ -31,7 +31,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::FORM);
+        // Arahkan berdasarkan peran pengguna
+        $user = $request->user();
+
+        if ($user->role === 'mitra') {
+            return redirect()->route('lowongan.data'); // Redirect untuk pengguna Mitra
+        } elseif ($user->role === 'Admin') {
+            return redirect()->route('dashboard'); // Redirect untuk Admin
+        } else {
+            return redirect()->route('index.show'); // Redirect untuk peran lainnya
+        }
     }
 
     /**

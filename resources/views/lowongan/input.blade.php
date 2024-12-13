@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="card-content">
                                     <div class="card-body">
-                                        <form class="form" id="lowongan_Form" action="{{ route('lowongan.store') }}" method="post">
+                                        <form class="form" id="lowongan_Form" action="{{ route('lowongan.store') }}" method="post" enctype="multipart/form-data">
                                             @csrf
                                             <div class="row">
                                                 <div class="col-md-12 col-12">
@@ -114,6 +114,14 @@
 
                                                 <div class="col-md-12 col-12">
                                                     <div class="form-group">
+                                                        <label for="photo">Photo (Opsional)</label>
+                                                        <input type="file" id="file" class="form-control" name="photo" accept="image/*">
+                                                        <small class="form-text text-muted">Unggah foto lowongan dalam format JPEG, PNG, atau JPG. Maksimal ukuran 2MB.</small>
+                                                    </div>
+                                                </div> 
+
+                                                <div class="col-md-12 col-12">
+                                                    <div class="form-group">
                                                         <label for="requirement">Requirement</label>
                                                         <div id="requirementFields">
                                                             <input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>
@@ -121,8 +129,17 @@
                                                         <button type="button" id="addRequirement" class="btn btn-secondary mt-2">Tambah Requirement</button>
                                                         <small class="form-text text-muted">Contoh isi: "Pengalaman minimal 2 tahun di bidang pengembangan perangkat lunak"</small>
                                                     </div>
+                                                </div>                                               
+                                            </div>
+
+                                            <div class="col-md-12 col-12">
+                                                <div class="form-group">
+                                                    <label for="link_lamaran">Link Lamaran</label>
+                                                    <input type="text" id="link_lamaran" class="form-control"
+                                                        name="link_lamaran" placeholder="Link Lamaran">
                                                 </div>
                                             </div>
+
                                             <div class="col-12 d-flex justify-content-end">
                                                 <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>
                                                 <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
@@ -144,48 +161,39 @@
     <script src="assets/compiled/js/app.js"></script>
 
     <script>
-        $(document).ready(function() {
-            // CSRF token setup for AJAX
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        // Form submit handler for adding new data
+        $('#lowongan_Form').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData(this);  // Use FormData to handle file upload
+            console.log(formData);
+
+            $.ajax({
+                url: '{{ route("lowongan.store") }}', // Ensure this route matches the one in your routes/web.php
+                type: 'POST',
+                data: formData,
+                processData: false,  // Important to disable for file upload
+                contentType: false,  // Important to disable for file upload
+                success: function(response) {
+                    $('#messages').html('<div class="alert alert-success">Data berhasil disimpan!</div>');
+                    $('#lowongan_Form')[0].reset(); // Reset the form
+                    $('#requirementFields').empty().append('<input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>');
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON.errors;
+                    var errorMsg = '<ul>';
+                    $.each(errors, function(key, value) {
+                        errorMsg += '<li>' + value + '</li>';
+                    });
+                    errorMsg += '</ul>';
+                    $('#messages').html('<div class="alert alert-danger">' + errorMsg + '</div>');
                 }
             });
+        });
 
-            // Form submit handler for adding new data
-            $('#lowongan_Form').on('submit', function(event) {
-                event.preventDefault();
-
-                var formData = $(this).serialize();
-                console.log(formData);
-
-                $.ajax({
-                    url: '{{ route("lowongan.store") }}',
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        $('#messages').html('<div class="alert alert-success">Data berhasil disimpan!</div>');
-                        $('#lowongan_Form')[0].reset();
-                        $('#requirementFields').empty().append('<input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>');
-                        // Call a function to reload data if necessary
-                        // loadDataFromDatabase();
-                    },
-                    error: function(xhr) {
-                        var errors = xhr.responseJSON.errors;
-                        var errorMsg = '<ul>';
-                        $.each(errors, function(key, value) {
-                            errorMsg += '<li>' + value + '</li>';
-                        });
-                        errorMsg += '</ul>';
-                        $('#messages').html('<div class="alert alert-danger">' + errorMsg + '</div>');
-                    }
-                });
-            });
-
-            // Handle adding new requirement input
-            $('#addRequirement').on('click', function() {
-                $('#requirementFields').append('<input type="text" class="form-control mt-2" name="requirement[]" placeholder="Masukkan requirement" required>');
-            });
+        // Handle adding new requirement input dynamically
+        $('#addRequirement').on('click', function() {
+            $('#requirementFields').append('<input type="text" class="form-control mt-2" name="requirement[]" placeholder="Masukkan requirement" required>');
         });
     </script>
 </body>

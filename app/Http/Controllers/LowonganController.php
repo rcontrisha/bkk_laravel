@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lowongan;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class LowonganController extends Controller
@@ -21,8 +22,12 @@ class LowonganController extends Controller
 
     public function data()
     {
-        $lowongans = Lowongan::all();
-        
+        // Ambil pengguna yang sedang login
+        $user = auth()->user();
+
+        // Fetch data lowongan berdasarkan id_mitra pengguna yang sedang login
+        $lowongans = Lowongan::where('id_mitra', $user->id)->get();
+
         if (request()->wantsJson()) {
             return response()->json(['data' => $lowongans], 200);
         }
@@ -41,7 +46,7 @@ class LowonganController extends Controller
     public function store(Request $request)
     {
         // Validasi input
-        $request->validate([
+        $validated = $request->validate([
             'judul' => 'required|string|max:255',
             'perusahaan' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
@@ -49,27 +54,36 @@ class LowonganController extends Controller
             'tipe' => 'required|string|max:255',
             'gaji' => 'nullable|numeric',
             'deskripsi' => 'nullable|string',
-            'requirement' => 'required|array|min:1', // Memastikan requirement adalah array dan tidak kosong
-            'requirement.*' => 'string|max:255' // Setiap item dalam requirement adalah string
+            'requirement' => 'required|array|min:1',
+            'requirement.*' => 'string|max:255',
+            'link_lamaran' => 'required|string|max:255',
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:10240' // Validasi untuk file photo
         ]);
 
-        // Membuat lowongan baru
-        $lowongan = Lowongan::create($request->only([
-            'judul', 
-            'perusahaan', 
-            'lokasi', 
-            'kategori', 
-            'tipe', 
-            'gaji', 
-            'deskripsi'
-        ]));
+        // Simpan data lowongan
+        $lowongan = new Lowongan();
+        $lowongan->judul = $validated['judul'];
+        $lowongan->id_mitra = auth()->id();
+        $lowongan->perusahaan = $validated['perusahaan'];
+        $lowongan->kategori = $validated['kategori'];
+        $lowongan->tipe = $validated['tipe'];
+        $lowongan->lokasi = $validated['lokasi'];
+        $lowongan->gaji = $validated['gaji'];
+        $lowongan->deskripsi = $validated['deskripsi'];
+        $lowongan->link_lamaran = $validated['link_lamaran'];
+        $lowongan->photo = $request->file('photo') 
+        ? $request->file('photo')->move(public_path('uploads/lowongan'), $request->file('photo')->getClientOriginalName()) 
+        : null;
+    
+        // Format requirement sebagai array string (langsung sebagai string array)
+        $lowongan->requirement = '[' . implode(', ', array_map(function ($item) {
+            return '"' . addslashes($item) . '"'; // Menambahkan tanda kutip ganda dan escape karakter
+        }, $validated['requirement'])) . ']';
 
-        // Menyimpan requirement terpisah jika perlu
-        $lowongan->requirement = $request->input('requirement');
         $lowongan->save();
 
-        // Mengembalikan response JSON
-        return response()->json($lowongan, 201);
+        // Mengembalikan response JSON atau notifikasi sukses
+        return back()->with('success', 'Lowongan berhasil ditambahkan!');
     }
 
     // Mengupdate lowongan
@@ -88,12 +102,23 @@ class LowonganController extends Controller
             'gaji' => 'nullable|numeric',
             'deskripsi' => 'nullable|string',
             'requirement' => 'nullable|array', // Validasi sebagai array
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:10240' // Validasi untuk file photo
         ]);
 
         // Hanya memperbarui field yang ada dalam input
         $filteredData = array_filter($validated, function ($value) {
             return !is_null($value);
         });
+
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('photos', 'public');
+            $filteredData['photo'] = $photoPath;
+        
+            // Hapus file foto lama jika ada
+            if ($lowongan->photo) {
+                Storage::disk('public')->delete($lowongan->photo);
+            }
+        }
 
         // Mengubah requirement menjadi JSON string
         if (isset($filteredData['requirement'])) {

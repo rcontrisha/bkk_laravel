@@ -8,6 +8,7 @@ use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\DaftarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/alumni', [AlumniController::class, 'update']);
     Route::delete('/alumni/{id}', [AlumniController::class, 'destroy']);
     Route::post('/alumni/update-photo', [AlumniController::class, 'updatePhoto']);
+
+    // Routes for Pendaftaran Lowongan
+    Route::get('/pendaftaran', [DaftarController::class, 'index'])->name('pendaftaran.index'); // Menampilkan daftar pendaftaran
+    Route::get('/pendaftaran/{id}', [DaftarController::class, 'show'])->name('pendaftaran.show'); // Detail pendaftaran
+    Route::post('/pendaftaran', [DaftarController::class, 'store'])->name('pendaftaran.store'); // Menyimpan pendaftaran baru
+    Route::post('/pendaftaran/{id}/update-status', [DaftarController::class, 'updateStatus'])->name('pendaftaran.updateStatus');
+    Route::get('/pendaftaran-user', [DaftarController::class, 'getUserApplications'])->name('pendaftaran.user');
+    Route::delete('/pendaftaran/{id}', [DaftarController::class, 'destroy'])->name('pendaftaran.destroy'); // Menghapus pendaftaran
 
     // Routes untuk Bookmark Jobs
     Route::post('/bookmarks', [BookmarkController::class, 'store']); // Add a bookmark
