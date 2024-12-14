@@ -25,14 +25,35 @@ class LowonganController extends Controller
         // Ambil pengguna yang sedang login
         $user = auth()->user();
 
-        // Fetch data lowongan berdasarkan id_mitra pengguna yang sedang login
-        $lowongans = Lowongan::where('id_mitra', $user->id)->get();
+        // Ambil data mitra terkait user
+        $mitra = $user->mitra;
+        if (!$mitra) {
+            if (request()->wantsJson()) {
+                return response()->json(['error' => 'Anda belum terdaftar sebagai mitra.'], 403);
+            }
 
-        if (request()->wantsJson()) {
-            return response()->json(['data' => $lowongans], 200);
+            return redirect()->back()->withErrors('Anda belum terdaftar sebagai mitra.');
         }
 
-        return view('lowongan.show', compact('lowongans'));
+        // Fetch data lowongan berdasarkan id_mitra pengguna yang sedang login
+        $lowongans = Lowongan::where('id_mitra', $mitra->id_mitra)->paginate(10);
+
+        // Cek jika data kosong
+        if ($lowongans->isEmpty()) {
+            if (request()->wantsJson()) {
+                return response()->json(['message' => 'Tidak ada lowongan ditemukan.'], 404);
+            }
+
+            return view('lowongan.show', ['lowongans' => $lowongans, 'message' => 'Tidak ada lowongan ditemukan.']);
+        }
+
+        // Kembalikan response JSON jika diminta
+        if (request()->wantsJson()) {
+            return response()->json($lowongans, 200);
+        }
+
+        // Kembalikan ke view
+        return view('lowongan.show', ['lowongans' => $lowongans]);
     }
 
     // Menampilkan detail lowongan
@@ -48,8 +69,6 @@ class LowonganController extends Controller
         // Validasi input
         $validated = $request->validate([
             'judul' => 'required|string|max:255',
-            'perusahaan' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
             'tipe' => 'required|string|max:255',
             'gaji' => 'nullable|numeric',
@@ -60,14 +79,17 @@ class LowonganController extends Controller
             'photo' => 'required|image|mimes:jpeg,png,jpg|max:10240' // Validasi untuk file photo
         ]);
 
+        $mitra = auth()->user()->mitra; // Pastikan relasi `user()->mitra` sudah didefinisikan.
+        if (!$mitra) {
+            return back()->withErrors('Anda belum terdaftar sebagai mitra.');
+        }
+
         // Simpan data lowongan
         $lowongan = new Lowongan();
         $lowongan->judul = $validated['judul'];
-        $lowongan->id_mitra = auth()->id();
-        $lowongan->perusahaan = $validated['perusahaan'];
+        $lowongan->id_mitra = $mitra->id_mitra;
         $lowongan->kategori = $validated['kategori'];
         $lowongan->tipe = $validated['tipe'];
-        $lowongan->lokasi = $validated['lokasi'];
         $lowongan->gaji = $validated['gaji'];
         $lowongan->deskripsi = $validated['deskripsi'];
         $lowongan->link_lamaran = $validated['link_lamaran'];

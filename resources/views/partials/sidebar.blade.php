@@ -46,6 +46,12 @@
                 
                 @if(Auth::user()->role == 'mitra')
                     <!-- Menu khusus untuk Mitra -->
+                    <h6 class="mt-4 fw-semibold">
+                        <i class="bi bi-building"></i> {{ auth()->user()->mitra->perusahaan }}
+                    </h6>
+                    <h6 class="mt-2 fw-semibold">
+                        <i class="bi bi-geo-alt"></i> {{ auth()->user()->mitra->lokasi }}
+                    </h6>                    
                     <li class="sidebar-title">Menu</li>
                     <li class="sidebar-item">
                         <a href="{{ route('lowongan.show') }}" class="sidebar-link">

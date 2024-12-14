@@ -61,14 +61,6 @@
 
                                                 <div class="col-md-12 col-12">
                                                     <div class="form-group">
-                                                        <label for="perusahaan">Nama Perusahaan</label>
-                                                        <input type="text" id="perusahaan" class="form-control"
-                                                            name="perusahaan" placeholder="Nama Perusahaan">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-12 col-12">
-                                                    <div class="form-group">
                                                         <label for="kategori">Kategori</label>
                                                         <input type="text" id="kategori" class="form-control"
                                                             name="kategori" placeholder="Nama Kategori">
@@ -86,14 +78,6 @@
                                                                 <option>Magang</option>
                                                             </select>
                                                         </fieldset>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-12 col-12">
-                                                    <div class="form-group">
-                                                        <label for="lokasi">Lokasi Pekerjaan</label>
-                                                        <input type="text" id="lokasi" class="form-control"
-                                                            name="lokasi" placeholder="Lokasi Pekerjaan">
                                                     </div>
                                                 </div>
 
@@ -122,6 +106,14 @@
 
                                                 <div class="col-md-12 col-12">
                                                     <div class="form-group">
+                                                        <label for="link_lamaran">Link Lamaran</label>
+                                                        <input type="text" id="link_lamaran" class="form-control"
+                                                            name="link_lamaran" placeholder="Link Lamaran">
+                                                    </div>
+                                                </div>
+    
+                                                <div class="col-md-12 col-12">
+                                                    <div class="form-group">
                                                         <label for="requirement">Requirement</label>
                                                         <div id="requirementFields">
                                                             <input type="text" class="form-control" name="requirement[]" placeholder="Masukkan requirement" required>
@@ -130,14 +122,6 @@
                                                         <small class="form-text text-muted">Contoh isi: "Pengalaman minimal 2 tahun di bidang pengembangan perangkat lunak"</small>
                                                     </div>
                                                 </div>                                               
-                                            </div>
-
-                                            <div class="col-md-12 col-12">
-                                                <div class="form-group">
-                                                    <label for="link_lamaran">Link Lamaran</label>
-                                                    <input type="text" id="link_lamaran" class="form-control"
-                                                        name="link_lamaran" placeholder="Link Lamaran">
-                                                </div>
                                             </div>
 
                                             <div class="col-12 d-flex justify-content-end">

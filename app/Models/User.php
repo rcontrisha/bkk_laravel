@@ -42,4 +42,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(DaftarLowongan::class, 'user_id');
     }
+
+    // Relasi dengan model Mitra
+    public function mitra()
+    {
+        return $this->hasOne(Mitra::class, 'id_user', 'id');
+    }
 }

@@ -55,8 +55,6 @@
                                     <thead>
                                         <tr>
                                             <th>Judul Lowongan</th>
-                                            <th>Perusahaan</th>
-                                            <th>Lokasi</th>
                                             <th>Kategori</th>
                                             <th>Tipe Pekerjaan</th>
                                             <th>Gaji</th>
@@ -68,8 +66,6 @@
                                         @foreach($lowongans as $item)
                                         <tr>
                                             <td>{{ $item->judul }}</td>
-                                            <td>{{ $item->perusahaan }}</td>
-                                            <td>{{ $item->lokasi }}</td>
                                             <td>{{ $item->kategori }}</td>
                                             <td>{{ $item->tipe }}</td>
                                             <td>Rp{{ $item->gaji }}</td>
@@ -125,8 +121,6 @@
                         console.log(response);
                         var lowongan = response.data || response;
                         $('#editJudul').val(lowongan.judul);
-                        $('#editPerusahaan').val(lowongan.perusahaan);
-                        $('#editLokasi').val(lowongan.lokasi);
                         $('#editKategori').val(lowongan.kategori);
                         $('#editTipe').val(lowongan.tipe);
                         $('#editGaji').val(lowongan.gaji);
@@ -226,14 +220,6 @@
                         <div class="form-group">
                             <label for="editJudul">Judul Lowongan</label>
                             <input type="text" class="form-control" id="editJudul" name="judul">
-                        </div>
-                        <div class="form-group">
-                            <label for="editPerusahaan">Perusahaan</label>
-                            <input type="text" class="form-control" id="editPerusahaan" name="perusahaan">
-                        </div>
-                        <div class="form-group">
-                            <label for="editLokasi">Lokasi</label>
-                            <input type="text" class="form-control" id="editLokasi" name="lokasi">
                         </div>
                         <div class="form-group">
                             <label for="editKategori">Kategori</label>

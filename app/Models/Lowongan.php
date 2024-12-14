@@ -14,8 +14,6 @@ class Lowongan extends Model
     protected $fillable = [
         'judul',
         'id_mitra',
-        'perusahaan',
-        'lokasi',
         'kategori',
         'tipe',
         'gaji',
@@ -28,5 +26,10 @@ class Lowongan extends Model
     public function pendaftaranLowongan()
     {
         return $this->hasMany(DaftarLowongan::class, 'lowongan_id');
+    }
+
+    public function mitra()
+    {
+        return $this->belongsTo(Mitra::class, 'id_mitra', 'id_mitra');
     }
 }
