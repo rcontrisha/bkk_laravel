@@ -147,6 +147,28 @@
                 });
             });
 
+            $(document).on('click', '.delete-btn', function() {
+                var id = $(this).data('id');
+                if (confirm('Apakah Anda yakin ingin menghapus lowongan ini?')) {
+                    $.ajax({
+                        url: '{{ route('lowongan.delete', ':id') }}'.replace(':id', id),
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            console.log('Delete Success:', response); // Debugging
+                            alert(response.message); // Tampilkan pesan
+                            location.reload(); // Refresh halaman
+                        },
+                        error: function(xhr) {
+                            console.error('Delete Error:', xhr.responseText); // Debugging
+                            alert('Terjadi kesalahan saat menghapus data.');
+                        }
+                    });
+                }
+            });
+
             // Event handler for adding new requirement input fields
             $('#addEditRequirement').on('click', function() {
                 $('#editRequirementFields').append(`

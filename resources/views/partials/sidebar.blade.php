@@ -92,18 +92,6 @@
                             <span>Data Alumni</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a href="{{ route('lowongan.show') }}" class="sidebar-link">
-                            <i class="bi bi-grid-fill"></i>
-                            <span>Input Lowongan</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="{{ route('lowongan.data') }}" class="sidebar-link">
-                            <i class="bi bi-grid-fill"></i>
-                            <span>Data Lowongan</span>
-                        </a>
-                    </li>
                 @endif
 
                 <!-- Profile Settings -->

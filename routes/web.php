@@ -39,6 +39,7 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::post('/input_lowongan', [LowonganController::class, 'store'])->name('lowongan.store');
     Route::get('/edit-lowongan/{id}', [LowonganController::class, 'show'])->name('lowongan.edit');
     Route::put('/update-lowongan/{id}', [LowonganController::class, 'update'])->name('lowongan.update');
+    Route::delete('/delete-lowongan/{id}', [LowonganController::class, 'destroy'])->name('lowongan.delete');
 
     // Routes for Pendaftaran Lowongan
     Route::get('/pendaftaran', [DaftarController::class, 'index'])->name('pendaftaran.index'); // Menampilkan daftar pendaftaran
