@@ -55,6 +55,20 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/edit-alumni/{id}', [AlumniController::class, 'edit'])->name('alumni.edit');
     Route::put('/update-alumni/{id}', [AlumniController::class, 'update'])->name('alumni.update');
     Route::delete('/alumni/data/{id}', [AlumniController::class, 'destroy'])->name('alumni.destroy');
+
+    // Route untuk View CV
+    Route::get('/view-cv/{filename}', function ($filename) {
+        $filePath = storage_path('app/public/' . $filename);
+    
+        if (file_exists($filePath)) {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"'
+            ]);
+        } else {
+            abort(404, 'File not found');
+        }
+    })->name('view.cv');
 });
 
 require __DIR__ . '/auth.php';

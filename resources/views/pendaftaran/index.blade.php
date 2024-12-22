@@ -10,14 +10,21 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="./assets/compiled/css/app.css">
     <link rel="stylesheet" href="./assets/compiled/css/app-dark.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </head>
 
 <body>
@@ -56,57 +63,66 @@
                                     <thead>
                                         <tr>
                                             <th>Nama Pelamar</th>
+                                            <th>E-Mail</th>
                                             <th>Judul Lowongan</th>
                                             <th>Perusahaan</th>
                                             <th>Tanggal Pendaftaran</th>
                                             <th>Status</th>
+                                            <th>CV Pelamar</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($pendaftaranLowongans as $item)
                                         <tr>
-                                            <td>{{ $item->user->name }}</td>
+                                            <td>{{ $item->nama }}</td>
+                                            <td>{{ $item->email }}</td>
                                             <td>{{ $item->lowongan->judul }}</td>
-                                            <td>{{ $item->lowongan->perusahaan }}</td>
-                                            <td>{{ $item->tanggal_pendaftaran }}</td>
+                                            <td>{{ $item->lowongan->mitra->perusahaan }}</td>
+                                            <td>{{ $item->created_at }}</td>
                                             <td>{{ $item->status }}</td>
+                                            <td>
+                                                @if($item->cv)
+                                                    <!-- Lihat CV -->
+                                                    <button class="btn btn-info" onclick="viewCV('{{ asset('storage/' . $item->cv) }}')">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <!-- Unduh CV -->
+                                                    <a href="{{ asset('storage/' . $item->cv) }}" class="btn btn-primary" download>
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                @else
+                                                    <button class="btn btn-secondary" disabled>
+                                                        <i class="bi bi-x-circle"></i> CV Tidak Ada
+                                                    </button>
+                                                @endif
+                                            </td>                                            
                                             <td>
                                                 <button class="btn btn-success accept-btn" data-id="{{ $item->id }}">Accept</button>
                                                 <button class="btn btn-danger reject-btn" data-id="{{ $item->id }}">Reject</button>
-                                            </td>                                            
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="modal fade" id="interviewModal" tabindex="-1" aria-labelledby="interviewModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
+                            <!-- Modal for viewing CV -->
+                            <div class="modal fade" id="cvModal" tabindex="-1" aria-labelledby="cvModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="interviewModalLabel">Interview Details</h5>
+                                            <h5 class="modal-title" id="cvModalLabel">CV Pelamar</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form id="interviewForm">
-                                                <div class="form-group">
-                                                    <label for="lokasi_interview">Lokasi Interview</label>
-                                                    <input type="text" class="form-control" id="lokasi_interview" name="lokasi_interview" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="tanggal_interview">Tanggal Interview</label>
-                                                    <input type="date" class="form-control" id="tanggal_interview" name="tanggal_interview" required>
-                                                </div>
-                                                <input type="hidden" id="lamaran_id">
-                                            </form>
+                                            <iframe id="cvFrame" src="" width="100%" height="500px" frameborder="0"></iframe>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary save-interview-btn">Save</button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -114,9 +130,6 @@
         </div>
         @include('partials.footer')
     </div>
-    <script src="assets/static/js/components/dark.js"></script>
-    <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script src="assets/compiled/js/app.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -128,57 +141,53 @@
             // Handle Accept button
             $(document).on('click', '.accept-btn', function () {
                 const id = $(this).data('id');
-                $('#lamaran_id').val(id); // Set the lamaran ID in the hidden input
-                $('#interviewModal').modal('show'); // Show the modal
-            });
-
-            // Save interview details
-            $('.save-interview-btn').click(function () {
-                const id = $('#lamaran_id').val();
-                const lokasi = $('#lokasi_interview').val();
-                const tanggal = $('#tanggal_interview').val();
-
-                $.ajax({
-                    url: `/pendaftaran/${id}/update-status`,
-                    type: 'POST',
-                    data: {
-                        status: 'accepted',
-                        lokasi_interview: lokasi,
-                        tanggal_interview: tanggal,
-                        _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                    },
-                    success: function (response) {
-                        alert(response.message);
-                        location.reload(); // Reload the page
-                    },
-                    error: function (xhr) {
-                        console.error('Error:', xhr.responseText);
-                    }
-                });
+                if (confirm('Apakah Anda yakin ingin menerima aplikasi ini?')) {
+                    $.ajax({
+                        url: `/pendaftaran/${id}/update-status`,
+                        type: 'POST',
+                        data: {
+                            status: 'accepted',
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (response) {
+                            toastr.success(response.message);
+                            location.reload();
+                        },
+                        error: function (xhr) {
+                            toastr.error('Terjadi kesalahan saat memproses permintaan.');
+                        }
+                    });
+                }
             });
 
             // Handle Reject button
             $(document).on('click', '.reject-btn', function () {
                 const id = $(this).data('id');
-                if (confirm('Are you sure you want to reject this application?')) {
+                if (confirm('Apakah Anda yakin ingin menolak aplikasi ini?')) {
                     $.ajax({
                         url: `/pendaftaran/${id}/update-status`,
                         type: 'POST',
                         data: {
                             status: 'rejected',
-                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                            _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function (response) {
-                            alert(response.message);
-                            location.reload(); // Reload the page
+                            toastr.success(response.message);
+                            location.reload();
                         },
                         error: function (xhr) {
-                            console.error('Error:', xhr.responseText);
+                            toastr.error('Terjadi kesalahan saat memproses permintaan.');
                         }
                     });
                 }
             });
         });
+
+        // Function to view CV in modal
+        function viewCV(cvUrl) {
+            $('#cvFrame').attr('src', cvUrl); // Set the iframe source
+            $('#cvModal').modal('show'); // Show the modal
+        }
     </script>
 </body>
 

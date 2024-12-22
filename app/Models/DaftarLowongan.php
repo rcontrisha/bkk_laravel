@@ -12,8 +12,12 @@ class DaftarLowongan extends Model
     protected $table = 'pendaftaran_lowongan'; 
 
     protected $fillable = [
-        'user_id',
         'lowongan_id',
+        'nama',
+        'nisn',
+        'no_telp',
+        'email',
+        'cv',
         'status', // Contoh: "pending", "accepted", "rejected"
         'lokasi_interview',
         'tanggal_interview'

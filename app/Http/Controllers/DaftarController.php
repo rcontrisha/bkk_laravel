@@ -14,10 +14,11 @@ class DaftarController extends Controller
         $mitraId = auth()->user()->id;
 
         // Filter pendaftaran berdasarkan mitra yang sedang login
-        $pendaftaranLowongans = DaftarLowongan::with('lowongan', 'user')
+        $pendaftaranLowongans = DaftarLowongan::with(['lowongan', 'lowongan.mitra']) // Memuat relasi lowongan dan mitra
             ->whereHas('lowongan', function ($query) use ($mitraId) {
-                $query->where('id_mitra', $mitraId);
-            })->get();
+                $query->where('id_mitra', $mitraId); // Filter berdasarkan id_mitra
+            })
+            ->get();
 
         // Cek apakah request berupa JSON
         if (request()->wantsJson()) {
@@ -26,22 +27,38 @@ class DaftarController extends Controller
             return view('pendaftaran.index', compact('pendaftaranLowongans'));
         }
     }
-
     public function store(Request $request)
     {
         // Validasi data input
         $validatedData = $request->validate([
             'lowongan_id' => 'required|exists:lowongan,id', // Pastikan ID lowongan valid
-            'user_id' => 'required|exists:users,id',        // Pastikan ID user valid
+            'nama' => 'required|string|max:255',           // Nama wajib diisi
+            'nisn' => 'required|numeric|digits:16',         // NIK wajib 16 digit
+            'no_telp' => 'required|string|max:15',         // Nomor telepon valid
+            'email' => 'required|email|max:255',           // Email valid
+            'cv' => 'required|file|mimes:pdf,doc,docx|max:2048', // File CV wajib, format dan ukuran terbatas
             'status' => 'nullable|string|in:pending,accepted,rejected', // Status valid
             'lokasi_interview' => 'nullable|string|max:255', // Opsional
             'tanggal_interview' => 'nullable|date|after_or_equal:today', // Opsional, tanggal harus di masa depan atau hari ini
         ]);
 
+        // Simpan file CV
+        if ($request->hasFile('cv')) {
+            $cvPath = $request->file('cv')->store('cv_files', 'public'); // Simpan di folder 'cv_files' di storage/public
+        } else {
+            return response()->json([
+                'message' => 'File CV diperlukan.',
+            ], 422);
+        }
+
         // Buat pendaftaran baru
         $daftarLowongan = DaftarLowongan::create([
             'lowongan_id' => $validatedData['lowongan_id'],
-            'user_id' => $validatedData['user_id']
+            'nama' => $validatedData['nama'],
+            'nisn' => $validatedData['nisn'],
+            'no_telp' => $validatedData['no_telp'],
+            'email' => $validatedData['email'],
+            'cv' => $cvPath, // Simpan path file CV
         ]);
 
         return response()->json([
@@ -52,7 +69,7 @@ class DaftarController extends Controller
 
     public function show($id)
     {
-        $pendaftaran = DaftarLowongan::with('lowongan', 'user')->findOrFail($id);
+        $pendaftaran = DaftarLowongan::with('lowongan')->findOrFail($id);
         return response()->json($pendaftaran);
     }
 
